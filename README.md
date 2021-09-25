@@ -1,6 +1,6 @@
 <h1>Z-Note</h1>
 
-Android app using Clean Architecture using MVVM(Model View ViewModel) with Jetpack Compose
+Android app having Clean Architecture using MVVM(Model View ViewModel) with Jetpack Compose
 
 <h2>Features</h2>
 

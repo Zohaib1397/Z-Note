@@ -1,17 +1,26 @@
 package com.example.z_note.feature.presentation.UI
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.z_note.R
 import com.example.z_note.ui.theme.ZNoteTheme
 
 
@@ -43,7 +52,14 @@ private enum class NoteState{
 
 
 @Composable
-fun NoteCard() {
+fun NoteCard(
+    noteTitle:String,
+    noteContent:String,
+    noteColor: Color = MaterialTheme.colors.surface,
+    currentNoteIndex:Int,
+    modifier:Modifier = Modifier,
+
+) {
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
@@ -61,6 +77,10 @@ fun NoteCard() {
 
     }
     NoteCardView(
+        noteTitle,
+        noteContent,
+        noteColor,
+        currentNoteIndex,
         noteState,
         arrowRotate
     ){
@@ -79,6 +99,10 @@ fun NoteCard() {
 
 @Composable
 private fun NoteCardView(
+    noteTitle:String,
+    noteContent: String,
+    noteColor: Color,
+    currentNoteIndex: Int,
     noteState: NoteState,
     arrowRotate: Float,
     modifier:Modifier = Modifier,
@@ -92,21 +116,74 @@ private fun NoteCardView(
         elevation = 2.dp
     ) {
         NoteColumnView(
+            noteTitle,
+            noteContent,
+            noteColor,
+            currentNoteIndex,
             noteState,
             arrowRotate,
-        ){
-            onNoteStateChange()
-        }
+            onNoteStateChange
+        )
     }
 }
 
 @Composable
 private fun NoteColumnView(
+    noteTitle: String,
+    noteContent: String,
+    noteColor:Color,
+    currentNoteIndex: Int,
     noteState: NoteState,
     arrowRotate: Float,
-    function: () -> Unit
+    onNoteStateChange: () -> Unit
 ) {
+    Column(
+        modifier = Modifier
+            .background(color = noteColor)
+            .animateContentSize()
+    ){
+        Text(
+            text = noteTitle,
+            fontWeight = FontWeight(700),
+            modifier = Modifier.padding(start = 20.dp,top = 12.dp)
+        )
+        NoteExpandableRowView(
+            noteTitle,
+            noteContent,
+            currentNoteIndex,
+            noteState,
+            arrowRotate,
+            onNoteStateChange
+        )
+    }
+}
 
+@Composable
+private fun NoteExpandableRowView(
+    noteTitle: String,
+    noteContent: String,
+    currentNoteIndex: Int,
+    noteState: NoteState,
+    arrowRotate: Float,
+    onNoteStateChange: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Text(
+            text = noteContent,
+            modifier = Modifier.padding(start = 20.dp,bottom = 12.dp).fillMaxWidth(0.8f)
+        )
+        IconButton(onClick = onNoteStateChange) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.ic_arrow_down),
+//                contentDescription = "DropDown",
+//                modifier =Modifier.rotate(noteRotate)
+//            )
+        }
+    }
 }
 
 @Preview(
@@ -118,6 +195,6 @@ private fun NoteColumnView(
 @Composable
 fun previewTodoCard() {
     ZNoteTheme {
-        NoteCard()
+//        NoteCard()
     }
 }

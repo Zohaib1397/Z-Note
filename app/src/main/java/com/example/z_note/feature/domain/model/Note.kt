@@ -1,5 +1,6 @@
 package com.example.z_note.feature.domain.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,7 +8,9 @@ import androidx.room.PrimaryKey
 data class Note(
     @PrimaryKey(autoGenerate = true)
     val id:Int,
+    @ColumnInfo(name = "NoteTitle")
     val title:String,
+    @ColumnInfo(name = "NoteText")
     val text:String,
 //    val color:Color
 )

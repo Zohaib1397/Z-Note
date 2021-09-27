@@ -1,4 +1,4 @@
-package com.example.z_note.feature.domain
+package com.example.z_note.feature.presentation.notes
 
 import android.app.Application
 import androidx.lifecycle.*
@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
 
 class NoteViewModel(application: Application): AndroidViewModel(application) {
 
-    private val getAllNotes: LiveData<List<Note>>
+    val getAllNotes: LiveData<List<Note>>
     private val repository: NoteRepository
 
     init{

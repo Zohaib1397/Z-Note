@@ -12,12 +12,14 @@ private enum class NoteState{
     Expanded
 }
 
+
+
+
 @Composable
 fun NoteCard() {
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState)
     val arrowRotate by transition.animateFloat(
-        transitionSpec =
     ) { state ->
         when(state){
             NoteState.Collapsed -> 0f

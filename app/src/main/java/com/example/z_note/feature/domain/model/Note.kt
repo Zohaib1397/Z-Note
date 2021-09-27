@@ -12,5 +12,7 @@ data class Note(
     val title:String,
     @ColumnInfo(name = "NoteText")
     val text:String,
+    @ColumnInfo(name = "IsTodo")
+    val isTodo:Boolean
 //    val color:Color
 )

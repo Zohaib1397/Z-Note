@@ -1,7 +1,9 @@
 package com.example.z_note.feature.presentation.UI
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,13 +15,17 @@ private enum class NoteState{
 }
 
 
-
-
 @Composable
 fun NoteCard() {
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
-    val transition = updateTransition(targetState = noteState)
+    val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
+        label = "Arrow Rotation",
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy
+            )
+        }
     ) { state ->
         when(state){
             NoteState.Collapsed -> 0f

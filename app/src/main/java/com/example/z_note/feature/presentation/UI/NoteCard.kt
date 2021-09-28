@@ -2,10 +2,7 @@ package com.example.z_note.feature.presentation.UI
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -63,12 +60,7 @@ fun NoteCard(
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
-        label = "Arrow Rotation",
-        transitionSpec = {
-            spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy
-            )
-        }
+        label = "Arrow Rotation"
     ) { state ->
         when(state){
             NoteState.Collapsed -> 0f
@@ -126,7 +118,12 @@ private fun NoteCardView(
         )
     }
 }
-
+/*
+* NoteColumnView Composable is the layout of
+* 1) Note Title
+* 2) Note Content ----- Arrow Head
+* 3) Expandable View Contains buttons
+* */
 @Composable
 private fun NoteColumnView(
     noteTitle: String,
@@ -147,6 +144,7 @@ private fun NoteColumnView(
             fontWeight = FontWeight(700),
             modifier = Modifier.padding(start = 20.dp,top = 12.dp)
         )
+        //This Composable contains NoteContent and Arrow
         NoteExpandableRowView(
             noteTitle,
             noteContent,
@@ -154,6 +152,13 @@ private fun NoteColumnView(
             noteState,
             arrowRotate,
             onNoteStateChange
+        )
+        //This Composable is the expanded view
+        ExpandedState(
+            noteTitle,
+            noteContent,
+            currentNoteIndex,
+            noteState,
         )
     }
 }
@@ -174,14 +179,44 @@ private fun NoteExpandableRowView(
     ){
         Text(
             text = noteContent,
-            modifier = Modifier.padding(start = 20.dp,bottom = 12.dp).fillMaxWidth(0.8f)
+            modifier = Modifier
+                .padding(start = 20.dp, bottom = 12.dp)
+                .fillMaxWidth(0.8f)
         )
         IconButton(onClick = onNoteStateChange) {
-//            Icon(
-//                painter = painterResource(id = R.drawable.ic_arrow_down),
-//                contentDescription = "DropDown",
-//                modifier =Modifier.rotate(noteRotate)
-//            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_down),
+                contentDescription = "DropDown",
+                modifier = Modifier.rotate(arrowRotate)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExpandedState(
+    noteTitle: String,
+    noteContent: String,
+    currentNoteIndex: Int,
+    noteState: NoteState
+) {
+    if(noteState == NoteState.Expanded){
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = {}) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_edit),
+                    contentDescription = "Edit Todo"
+                )
+            }
+            IconButton(onClick = {}) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete),
+                    contentDescription = "Delete Todo"
+                )
+            }
         }
     }
 }
@@ -195,6 +230,10 @@ private fun NoteExpandableRowView(
 @Composable
 fun previewTodoCard() {
     ZNoteTheme {
-//        NoteCard()
+        NoteCard(
+            noteTitle = "Note Title",
+            noteContent = "This is a sample note",
+            currentNoteIndex = 0,
+        )
     }
 }

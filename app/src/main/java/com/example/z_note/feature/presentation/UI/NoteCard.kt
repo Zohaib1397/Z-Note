@@ -18,21 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.z_note.R
+import com.example.z_note.feature.presentation.States.NoteState
 import com.example.z_note.ui.theme.ZNoteTheme
 
-
-/*
- Note State (Expanded / Collapsed)
-
-* To determine the state of note following enum class
-* contains two states
-* if note is expanded the state will be NoteState.Expanded
-* and if note is not expanded the state will be NoteState.Collapsed
-* */
-private enum class NoteState{
-    Collapsed,
-    Expanded
-}
 
 /*
 * Note Card
@@ -50,11 +38,11 @@ private enum class NoteState{
 
 @Composable
 fun NoteCard(
+    modifier:Modifier = Modifier,
     noteTitle:String,
     noteContent:String,
     noteColor: Color = MaterialTheme.colors.surface,
     currentNoteIndex:Int,
-    modifier:Modifier = Modifier,
 
 ) {
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
@@ -74,7 +62,8 @@ fun NoteCard(
         noteColor,
         currentNoteIndex,
         noteState,
-        arrowRotate
+        arrowRotate,
+        modifier
     ){
         noteState = when(noteState){
             NoteState.Collapsed -> NoteState.Expanded
@@ -146,10 +135,7 @@ private fun NoteColumnView(
         )
         //This Composable contains NoteContent and Arrow
         NoteExpandableRowView(
-            noteTitle,
             noteContent,
-            currentNoteIndex,
-            noteState,
             arrowRotate,
             onNoteStateChange
         )
@@ -162,13 +148,13 @@ private fun NoteColumnView(
         )
     }
 }
-
+/*
+* This Composable is The Row of
+*  Note Content and Arrow head which is rotatable
+* */
 @Composable
 private fun NoteExpandableRowView(
-    noteTitle: String,
     noteContent: String,
-    currentNoteIndex: Int,
-    noteState: NoteState,
     arrowRotate: Float,
     onNoteStateChange: () -> Unit
 ) {

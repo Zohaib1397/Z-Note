@@ -2,6 +2,7 @@ package com.example.z_note.feature.presentation.notes
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,18 +41,33 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
 // Layout State is Defined in this variable
     var currentLayout by mutableStateOf(LayoutState.Linear_Layout)
     fun onLayoutChange(){
-        when(currentLayout){
+        currentLayout =when(currentLayout){
             LayoutState.Linear_Layout -> LayoutState.Grid_Layout
             LayoutState.Grid_Layout -> LayoutState.Linear_Layout
         }
     }
 
+// Searched List items
+    val searchedItemsList = mutableListOf<Note>()
+    fun addInSearchList(note:Note){
+        searchedItemsList.add(note)
+    }
+
+// Search Items list logic
+    fun searchFromList(notes: List<Note>): MutableList<Note> {
+        for(item in notes){
+            if(SearchBarText.lowercase() == item.text.lowercase() || SearchBarText.lowercase() == item.title.lowercase()){
+                addInSearchList(item)
+            }
+        }
+    return searchedItemsList
+    }
 }
 
 class NoteViewModelFactory(
     private val application:Application
 ): ViewModelProvider.Factory{
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED CAST")
         if(modelClass.isAssignableFrom(NoteViewModel::class.java)){
             return NoteViewModel(application) as T

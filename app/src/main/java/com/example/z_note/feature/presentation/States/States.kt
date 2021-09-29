@@ -12,8 +12,22 @@ enum class NoteState{
     Collapsed,
     Expanded
 }
-
+/*
+* Layout State (Linear / Grid)
+*
+* To Switch between Layout Views in the App following State
+* contains two States
+* */
 enum class LayoutState{
     Linear_Layout,
     Grid_Layout
+}
+
+/*
+* Color Row State is the button in AddNote screen
+* to get Colors
+* */
+enum class ColorRowState{
+    Collapsed,
+    Expanded
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.*
 import com.example.z_note.feature.data.data_source.NoteDatabase
 import com.example.z_note.feature.domain.model.Note
 import com.example.z_note.feature.domain.repository.NoteRepository
+import com.example.z_note.feature.presentation.States.ColorRowState
 import com.example.z_note.feature.presentation.States.LayoutState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,15 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
         }
     return searchedItemsList
     }
+// Default Color Row State
+    var colorRowState by mutableStateOf(ColorRowState.Collapsed)
+    fun onColorRowStateChange(){
+        colorRowState = when(colorRowState){
+            ColorRowState.Collapsed -> ColorRowState.Expanded
+            ColorRowState.Expanded -> ColorRowState.Collapsed
+        }
+    }
+
 }
 
 class NoteViewModelFactory(

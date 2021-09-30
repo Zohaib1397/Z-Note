@@ -20,6 +20,7 @@ fun PreviewTodoCard() {
         NoteCard(
             noteTitle = "Note Title",
             noteContent = "This is a sample note",
+            getNoteColorFromIndex = 1,
             currentNoteIndex = 0,
         )
     }

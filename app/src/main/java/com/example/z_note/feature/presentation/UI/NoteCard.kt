@@ -1,6 +1,8 @@
 package com.example.z_note.feature.presentation.UI
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -9,15 +11,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.z_note.R
+import com.example.z_note.feature.domain.model.Note.Companion.noteColors
 import com.example.z_note.feature.presentation.States.NoteState
 import com.example.z_note.ui.theme.ZNoteTheme
 
@@ -36,15 +41,19 @@ import com.example.z_note.ui.theme.ZNoteTheme
 * */
 
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun NoteCard(
     modifier:Modifier = Modifier,
     noteTitle:String,
     noteContent:String,
-    noteColor: Color = MaterialTheme.colors.surface,
+    getNoteColorFromIndex:Int,
+//    noteColor: Color = MaterialTheme.colors.surface,
     currentNoteIndex:Int,
 
 ) {
+    val noteIndex by rememberSaveable(currentNoteIndex) {mutableStateOf(getNoteColorFromIndex)}
+    val noteColor =noteColors[noteIndex] //this noteColors is from Entity's Class Companion Object
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
@@ -169,7 +178,9 @@ private fun NoteExpandableRowView(
                 .padding(start = 20.dp, bottom = 12.dp)
                 .fillMaxWidth(0.8f)
         )
-        IconButton(onClick = onNoteStateChange) {
+        IconButton(onClick = {
+            onNoteStateChange
+        }) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_down),
                 contentDescription = "DropDown",
@@ -219,6 +230,7 @@ fun previewTodoCard() {
         NoteCard(
             noteTitle = "Note Title",
             noteContent = "This is a sample note",
+            getNoteColorFromIndex = 1,
             currentNoteIndex = 0,
         )
     }

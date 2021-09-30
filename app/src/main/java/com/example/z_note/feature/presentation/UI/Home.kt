@@ -11,10 +11,12 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.z_note.feature.domain.model.Note
+import com.example.z_note.feature.domain.model.Note.Companion.noteColors
 import com.example.z_note.feature.presentation.notes.NoteViewModel
 import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
@@ -26,6 +28,15 @@ fun Home(
     val context = LocalContext.current
     val viewModel: NoteViewModel = viewModel(
         factory = NoteViewModelFactory(context.applicationContext as Application)
+    )
+    viewModel.addNote(
+        Note(
+            0,
+            "Sample",
+            "this is an example text",
+            1,
+            false
+        )
     )
     Scaffold(
         modifier= modifier

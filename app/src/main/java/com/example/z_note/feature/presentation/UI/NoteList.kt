@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.z_note.feature.domain.model.Note.Companion.noteColors
 import com.example.z_note.feature.presentation.States.LayoutState
 import com.example.z_note.feature.presentation.notes.NoteViewModel
 
@@ -42,6 +43,7 @@ fun NoteScreen(
                 NoteCard(
                     noteTitle = ListOfNotes[index].title,
                     noteContent = ListOfNotes[index].text,
+                    getNoteColorFromIndex = ListOfNotes[index].color,
                     currentNoteIndex = index
                 )
             }

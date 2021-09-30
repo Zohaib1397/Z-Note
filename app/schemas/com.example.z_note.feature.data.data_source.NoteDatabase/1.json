@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "47e4aca3e96affaeae3bd943289a90ed",
+    "identityHash": "d5cb6f58721c1967b4f1a50abe60c737",
     "entities": [
       {
         "tableName": "note_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `NoteTitle` TEXT NOT NULL, `NoteText` TEXT NOT NULL, `IsTodo` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `NoteTitle` TEXT NOT NULL, `NoteText` TEXT NOT NULL, `NoteColor` INTEGER NOT NULL, `IsTodo` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -24,6 +24,12 @@
             "fieldPath": "text",
             "columnName": "NoteText",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "NoteColor",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -46,7 +52,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '47e4aca3e96affaeae3bd943289a90ed')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd5cb6f58721c1967b4f1a50abe60c737')"
     ]
   }
 }

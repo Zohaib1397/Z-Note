@@ -43,19 +43,19 @@ import com.example.z_note.ui.theme.ZNoteTheme
 * -- here Lambda functions are useful
 * */
 
-
 @SuppressLint("RememberReturnType")
 @Composable
 fun NoteCard(
     modifier:Modifier = Modifier,
     noteTitle:String,
     noteContent:String,
+    noteColor:Color,
     getNoteColorFromIndex:Int,
     currentNoteIndex:Int,
 
 ) {
-    val noteIndex by rememberSaveable(currentNoteIndex) {mutableStateOf(getNoteColorFromIndex)}
-    val noteColor =noteColors[noteIndex] //this noteColors is from Entity's Class Companion Object
+//    val noteIndex by rememberSaveable(currentNoteIndex) {mutableStateOf(getNoteColorFromIndex)}
+//    val noteColor =noteColors[noteIndex] //this noteColors is from Entity's Class Companion Object
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
@@ -232,6 +232,7 @@ fun previewTodoCard() {
         NoteCard(
             noteTitle = "Note Title",
             noteContent = "This is a sample note",
+            noteColor = Color.White,
             getNoteColorFromIndex = 1,
             currentNoteIndex = 0,
         )

@@ -22,6 +22,7 @@ fun NoteScreen(
 ) {
     val scrollState = rememberLazyListState()
     val ListOfNotes = viewModel.getAllNotes.observeAsState(listOf()).value
+    viewModel.setNoteColors(ListOfNotes)
     val searchedNotes = viewModel.searchFromList(ListOfNotes)
     if(viewModel.currentLayout== LayoutState.Linear_Layout){
         LazyColumn(

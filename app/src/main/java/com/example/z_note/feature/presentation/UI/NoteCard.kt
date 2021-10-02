@@ -2,6 +2,7 @@ package com.example.z_note.feature.presentation.UI
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.drawable.GradientDrawable
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key.Companion.Refresh
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.z_note.R
 import com.example.z_note.feature.domain.model.Note.Companion.noteColors
 import com.example.z_note.feature.presentation.States.NoteState
+import com.example.z_note.feature.presentation.notes.NoteViewModel
 import com.example.z_note.ui.theme.ZNoteTheme
 
 
@@ -48,7 +51,6 @@ fun NoteCard(
     noteTitle:String,
     noteContent:String,
     getNoteColorFromIndex:Int,
-//    noteColor: Color = MaterialTheme.colors.surface,
     currentNoteIndex:Int,
 
 ) {

@@ -1,17 +1,23 @@
 package com.example.z_note.feature.presentation.notes
 
 import android.app.Application
+import android.graphics.Color
+import androidx.compose.material.Colors
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.text.font.FontWeight.Companion.Black
 import androidx.lifecycle.*
 import com.example.z_note.feature.data.data_source.NoteDatabase
 import com.example.z_note.feature.domain.model.Note
+import com.example.z_note.feature.domain.model.Note.Companion.noteColors
 import com.example.z_note.feature.domain.repository.NoteRepository
 import com.example.z_note.feature.presentation.States.ColorRowState
 import com.example.z_note.feature.presentation.States.LayoutState
+import com.example.z_note.feature.presentation.States.NoteState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
@@ -32,6 +38,19 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
             repository.addNote(note)
         }
     }
+
+
+    var noteBackgroundColor = mutableListOf<androidx.compose.ui.graphics.Color>()
+    fun setNoteColors(notes: List<Note>){
+        for(item in notes){
+            noteBackgroundColor.add(noteColors[item.color])
+        }
+    }
+    fun getNoteColor(index :Int): androidx.compose.ui.graphics.Color {
+        return noteBackgroundColor[index]
+    }
+
+
 // Search Bar text is remembered by this following variable
     var SearchBarText by  mutableStateOf("")
     fun onSearchBarTextChange(text:String){
@@ -72,7 +91,17 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+// New Note Expanded State
+    var newNoteState by mutableStateOf(NoteState.Collapsed)
+    fun onNewNoteStateChange(){
+        newNoteState = when(newNoteState){
+            NoteState.Collapsed -> NoteState.Expanded
+            NoteState.Expanded -> NoteState.Collapsed
+        }
+    }
+
 }
+
 
 class NoteViewModelFactory(
     private val application:Application

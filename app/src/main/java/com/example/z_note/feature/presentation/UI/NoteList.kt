@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.z_note.feature.presentation.States.LayoutState
 import com.example.z_note.feature.presentation.notes.NoteViewModel
+import com.puculek.pulltorefresh.PullToRefresh
 
 @Composable
 fun NoteScreen(
@@ -26,7 +27,7 @@ fun NoteScreen(
         LazyColumn(
             contentPadding = PaddingValues(20.dp),
             state = scrollState
-        ){
+        ) {
             item {
                 SearchBar(
                     searchBarText = viewModel.SearchBarText,
@@ -36,8 +37,8 @@ fun NoteScreen(
                 )
             }
             itemsIndexed(
-                if(viewModel.SearchBarText.isEmpty()) ListOfNotes else searchedNotes
-            ){ index, item ->
+                if (viewModel.SearchBarText.isEmpty()) ListOfNotes else searchedNotes
+            ) { index, item ->
                 Spacer(modifier = Modifier.height(15.dp))
                 NoteCard(
                     noteTitle = ListOfNotes[index].title,

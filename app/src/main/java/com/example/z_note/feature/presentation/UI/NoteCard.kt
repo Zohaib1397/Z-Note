@@ -54,6 +54,7 @@ fun NoteCard(
     currentNoteIndex:Int,
 
 ) {
+
 //    val noteIndex by rememberSaveable(currentNoteIndex) {mutableStateOf(getNoteColorFromIndex)}
 //    val noteColor =noteColors[noteIndex] //this noteColors is from Entity's Class Companion Object
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
@@ -180,9 +181,9 @@ private fun NoteExpandableRowView(
                 .padding(start = 20.dp, bottom = 12.dp)
                 .fillMaxWidth(0.8f)
         )
-        IconButton(onClick = {
+        IconButton(onClick =
             onNoteStateChange
-        }) {
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_down),
                 contentDescription = "DropDown",

@@ -5,10 +5,9 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,9 +41,12 @@ fun Home(
         )
     )
     Scaffold(
+
         isFloatingActionButtonDocked = true,
         floatingActionButton = {
-            if(viewModel.newNoteState == NoteState.Collapsed) FloatingActionButton(onClick = viewModel::onNewNoteStateChange){}
+            if(viewModel.newNoteState == NoteState.Collapsed) FloatingActionButton(onClick = viewModel::onNewNoteStateChange){
+                Icon(Icons.Outlined.Add, contentDescription = "Add New Note")
+            }
                                },
         modifier= modifier
     ) {

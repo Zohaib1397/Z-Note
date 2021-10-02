@@ -67,6 +67,9 @@ dependencies {
     kapt "androidx.room:room-compiler:2.3.0"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
+
+    implementation 'com.puculek.pulltorefresh:pull-to-refresh-compose:1.0.6'
+
     // optional - RxJava2 support for Room
     implementation "androidx.room:room-rxjava2:$room_version"
 

@@ -15,7 +15,7 @@ fun AnimateNewNote(
     addNoteContent:String,
     viewModel:NoteViewModel,
     noteState: NoteState,
-    releventComposable: @Composable () -> Unit
+    callComposable: @Composable () -> Unit
 ) {
     AnimatedContent(
         targetState =  noteState,
@@ -38,12 +38,12 @@ fun AnimateNewNote(
         }
     ){ targetState ->
         if(targetState == NoteState.Collapsed){
-            releventComposable()
+            callComposable()
         }else {
             AddNote(
                 title = addNoteTitle,
                 content = addNoteContent,
-                viewModel = viewModel
+//                viewModel = viewModel
             )
         }
     }

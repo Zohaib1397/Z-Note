@@ -1,10 +1,12 @@
 package com.example.z_note.feature.presentation.UI
 
+import android.app.Application
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -18,12 +20,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.z_note.R
 import com.example.z_note.feature.presentation.States.ColorRowState
 import com.example.z_note.feature.presentation.notes.NoteViewModel
+import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
 @ExperimentalAnimationApi
@@ -33,15 +38,16 @@ fun AddNote(
     title:String,
     content:String,
     color: Color = MaterialTheme.colors.surface,
-    viewModel: NoteViewModel
+//    viewModel: NoteViewModel
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ){
         TopRow()
-        ColorsRow(
-            viewModel
-        )
+//        ColorsRow(
+//            viewModel
+//        )
+        Box(modifier.fillMaxSize().background(color = Color.Blue))
     }
 }
 
@@ -103,23 +109,23 @@ private fun ButtonsRow() {
     }
 }
 
-@ExperimentalAnimationApi
-@Composable
-fun ColorsRow(
-    viewModel: NoteViewModel
-) {
-    AnimatedContent(
-//        transitionSpec = {
-//            tween(
-//                durationMillis = 300,
-//                easing = LinearOutSlowInEasing
-//            )
-//        },
-        targetState = viewModel.colorRowState == ColorRowState.Expanded
-    ){
-        ColorButtonsRow()
-    }
-}
+//@ExperimentalAnimationApi
+//@Composable
+//fun ColorsRow(
+//    viewModel: NoteViewModel
+//) {
+//    AnimatedContent(
+////        transitionSpec = {
+////            tween(
+////                durationMillis = 300,
+////                easing = LinearOutSlowInEasing
+////            )
+////        },
+//        targetState = viewModel.colorRowState == ColorRowState.Expanded
+//    ){
+//        ColorButtonsRow()
+//    }
+//}
 @Composable
 fun ColorButtonsRow(){
     Row(
@@ -150,14 +156,18 @@ fun RoundedColorButton(
     }
 }
 @ExperimentalAnimationApi
-@Preview
+@Preview(
+    showBackground = true
+)
 @Composable
 fun ShowAddNotePreview() {
     ZNoteTheme {
         AddNote(
             title = "",
             content = "",
-            viewModel = null!!
+//            viewModel = viewModel(
+//                factory = NoteViewModelFactory(LocalContext.current.applicationContext as Application)
+//            )
         )
     }
 }

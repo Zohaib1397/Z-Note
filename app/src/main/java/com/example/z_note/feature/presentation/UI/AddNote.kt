@@ -1,6 +1,5 @@
 package com.example.z_note.feature.presentation.UI
 
-import android.app.Application
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -22,17 +21,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.z_note.R
-import com.example.z_note.feature.presentation.notes.NoteViewModel
-import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
 @ExperimentalComposeUiApi
@@ -45,13 +40,16 @@ fun AddNote(
     onNoteContentChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.surface,
+    onNoteStateChange: () -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(color = color)
     ) {
-        TopRow()
+        TopRow(
+            onNoteStateChange
+        )
 //        ColorsRow(
 //            viewModel
 //        )
@@ -125,7 +123,7 @@ private fun CustomTextField(
                     focusedBorderColor = Color.Transparent
                 ),
                 trailingIcon = {
-//                    if(viewModel.noteTitle.isNotEmpty()){
+                    if(noteText.isNotEmpty()){
                     if (hasTrailingIcon) {
                         IconButton(onClick = { /*TODO*/ }) {
                             Icon(
@@ -133,10 +131,10 @@ private fun CustomTextField(
                                 contentDescription = trailingIconContent,
                                 tint = if(noteText.length == maxLength)
                                     MaterialTheme.colors.error else Color.Unspecified
-                            )
+                                )
+                            }
                         }
                     }
-//                }
                 },
                 shape = RoundedCornerShape(12.dp),
                 textStyle = textStyle,
@@ -175,13 +173,13 @@ buttons can be implemented on conditions
 
 * */
 @Composable
-private fun TopRow() {
+private fun TopRow(onNoteStateChange: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = onNoteStateChange,
             modifier = Modifier.padding(5.dp)
         ) {
             Icon(
@@ -287,7 +285,8 @@ fun ShowAddNotePreview() {
             noteTitle = "",
             noteContent = "",
             onNoteTitleChange = {},
-            onNoteContentChange = {}
+            onNoteContentChange = {},
+            onNoteStateChange = {}
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.z_note.feature.presentation.UI
 
+import android.app.Application
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -20,21 +21,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.z_note.R
 import com.example.z_note.feature.presentation.notes.NoteViewModel
+import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
 @ExperimentalAnimationApi
 @Composable
 fun AddNote(
+    noteTitle:String,
+    noteContent:String,
+    onNoteTitleChange: (String) -> Unit,
+    onNoteContentChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.surface,
-//    viewModel: NoteViewModel
 ) {
     Column(
         modifier = modifier
@@ -51,14 +58,22 @@ fun AddNote(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomTextField( // For Note Title
+                noteText = noteTitle,
+                onNoteTextChange = {onNoteTitleChange(it)},
+                maxLines = 1,
+                maxLength = 20,
                 placeholder = "Title",
                 textStyle = TextStyle(fontSize = MaterialTheme.typography.h5.fontSize)
             )
-            Spacer(modifier = Modifier.height(10.dp))
             CustomTextField(
+                noteText = noteContent,
+                onNoteTextChange = {onNoteContentChange(it)},
+                maxLines = 20,
+                maxLength = 10000,
                 placeholder = "Note",
+                modifier = Modifier
+                    .fillMaxHeight(0.9f),
                 hasTrailingIcon = false,
-
             )
         }
     }
@@ -66,48 +81,76 @@ fun AddNote(
 
 @Composable
 private fun CustomTextField(
-//    viewModel: NoteViewModel,
+    noteText:String,
+    onNoteTextChange:(String) -> Unit,
     placeholder: String,
+    maxLines:Int,
+    maxLength:Int,
     trailingIcon: ImageVector = Icons.Outlined.Close,
     trailingIconContent: String = "Clear Title",
     hasTrailingIcon: Boolean = true,
     textStyle: TextStyle = TextStyle(),
-    backgroundColor: Color = MaterialTheme.colors.surface
+    backgroundColor: Color = MaterialTheme.colors.surface,
+    modifier:Modifier = Modifier
     ) {
-    TextField(
-//                value = viewModel.noteTitle, TODO
-//                onValueChange = viewModel::onNoteTitleChange TODO//
-        value = "This is a Sample p12",
-        onValueChange = { },
-        placeholder = {
-            Text(placeholder)
-        },
-        modifier = Modifier
-            .padding(20.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            backgroundColor = Color.Gray,
-            unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = Color.Transparent
-        ),
-        trailingIcon = {
+    Column(
+        modifier = Modifier.padding(start = 20.dp,end = 20.dp)
+    ){
+        Surface(
+            elevation = 2.dp,
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            TextField(
+                value = noteText,
+                onValueChange = {
+                    if(it.length <= maxLength) onNoteTextChange(it)
+                },
+                placeholder = {
+                    Text(placeholder)
+                },
+                modifier = modifier
+                    .fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = backgroundColor,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent
+                ),
+                trailingIcon = {
 //                    if(viewModel.noteTitle.isNotEmpty()){
-            if(hasTrailingIcon){
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(trailingIcon, contentDescription = "Clear Title")
-                }
-            }
+                    if (hasTrailingIcon) {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(trailingIcon, contentDescription = trailingIconContent)
+                        }
+                    }
 //                }
-        },
-        shape = RoundedCornerShape(12.dp),
-        textStyle = textStyle,
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next
-        ),
-        keyboardActions = KeyboardActions(
-            onNext = { /*TODO*/}
-        )
-    )
+                },
+                shape = RoundedCornerShape(12.dp),
+                textStyle = textStyle,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { /*TODO*/ }
+                ),
+                maxLines = maxLines
+            )
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            if(noteText.length == maxLength){
+                Text("Reached max limit",color = MaterialTheme.colors.error)
+            }else{
+                Spacer(modifier= Modifier)
+            }
+            Text("${noteText.length}/$maxLength",
+                color = if(noteText.length == maxLength)
+                    MaterialTheme.colors.error else Color.Unspecified
+            )
+        }
+    }
 }
 
 /*This Composable is Placed on top of the AddNote menu
@@ -225,9 +268,10 @@ fun RoundedColorButton(
 fun ShowAddNotePreview() {
     ZNoteTheme {
         AddNote(
-//            viewModel = viewModel(
-//                factory = NoteViewModelFactory(LocalContext.current.applicationContext as Application)
-//            )
+            noteTitle = "",
+            noteContent = "",
+            onNoteTitleChange = {},
+            onNoteContentChange = {}
         )
     }
 }

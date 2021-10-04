@@ -1,16 +1,14 @@
 package com.example.z_note.feature.presentation.UI
 
-import android.app.Application
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -18,20 +16,17 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.z_note.R
-import com.example.z_note.feature.presentation.States.ColorRowState
 import com.example.z_note.feature.presentation.notes.NoteViewModel
-import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
 @ExperimentalAnimationApi
@@ -55,34 +50,64 @@ fun AddNote(
             modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextField(
-//                value = viewModel.noteTitle, TODO
-//                onValueChange = viewModel::onNoteTitleChange TODO//
-                value = "This is a Sample p12",
-                onValueChange = { },
-                placeholder = {
-                    Text("Enter Title")
-                },
-                modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxWidth(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color.Gray,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent
-                ),
-                trailingIcon = {
-//                    if(viewModel.noteTitle.isNotEmpty()){
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Clear Title")
-                    }
-//                }
-                },
-                shape = RoundedCornerShape(12.dp),
+            CustomTextField( // For Note Title
+                placeholder = "Title",
                 textStyle = TextStyle(fontSize = MaterialTheme.typography.h5.fontSize)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            CustomTextField(
+                placeholder = "Note",
+                hasTrailingIcon = false,
+
             )
         }
     }
+}
+
+@Composable
+private fun CustomTextField(
+//    viewModel: NoteViewModel,
+    placeholder: String,
+    trailingIcon: ImageVector = Icons.Outlined.Close,
+    trailingIconContent: String = "Clear Title",
+    hasTrailingIcon: Boolean = true,
+    textStyle: TextStyle = TextStyle(),
+    backgroundColor: Color = MaterialTheme.colors.surface
+    ) {
+    TextField(
+//                value = viewModel.noteTitle, TODO
+//                onValueChange = viewModel::onNoteTitleChange TODO//
+        value = "This is a Sample p12",
+        onValueChange = { },
+        placeholder = {
+            Text(placeholder)
+        },
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth(),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            backgroundColor = Color.Gray,
+            unfocusedBorderColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent
+        ),
+        trailingIcon = {
+//                    if(viewModel.noteTitle.isNotEmpty()){
+            if(hasTrailingIcon){
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(trailingIcon, contentDescription = "Clear Title")
+                }
+            }
+//                }
+        },
+        shape = RoundedCornerShape(12.dp),
+        textStyle = textStyle,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Next
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { /*TODO*/}
+        )
+    )
 }
 
 /*This Composable is Placed on top of the AddNote menu

@@ -50,6 +50,18 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
         return noteBackgroundColor[index]
     }
 
+// /*
+// Default Note Title And Content Text
+// is described in this following State
+// */
+    var noteTitle by mutableStateOf("")
+    var noteContent by mutableStateOf("")
+    fun onNoteTitleChange(title:String){
+        noteTitle = title
+    }
+    fun onNoteContentChange(content:String){
+        noteContent = content
+    }
 
 // Search Bar text is remembered by this following variable
     var SearchBarText by  mutableStateOf("")
@@ -99,6 +111,8 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
             NoteState.Expanded -> NoteState.Collapsed
         }
     }
+
+
 
 }
 

@@ -40,11 +40,11 @@ fun AnimateNewNote(
         if(targetState == NoteState.Collapsed){
             callComposable()
         }else {
-            AddNote(
-                title = addNoteTitle,
-                content = addNoteContent,
-//                viewModel = viewModel
-            )
+//            AddNote(
+//                title = addNoteTitle,
+//                content = addNoteContent,
+////                viewModel = viewModel
+//            )
         }
     }
 }

@@ -13,15 +13,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,19 +38,50 @@ import com.example.z_note.ui.theme.ZNoteTheme
 @Composable
 fun AddNote(
     modifier: Modifier = Modifier,
-    title:String,
-    content:String,
     color: Color = MaterialTheme.colors.surface,
 //    viewModel: NoteViewModel
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
-    ){
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = color)
+    ) {
         TopRow()
 //        ColorsRow(
 //            viewModel
 //        )
-        Box(modifier.fillMaxSize().background(color = Color.Blue))
+        Spacer(modifier = Modifier.height(20.dp))
+        Column(
+            modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TextField(
+//                value = viewModel.noteTitle, TODO
+//                onValueChange = viewModel::onNoteTitleChange TODO//
+                value = "This is a Sample p12",
+                onValueChange = { },
+                placeholder = {
+                    Text("Enter Title")
+                },
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = Color.Gray,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent
+                ),
+                trailingIcon = {
+//                    if(viewModel.noteTitle.isNotEmpty()){
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(Icons.Outlined.Close, contentDescription = "Clear Title")
+                    }
+//                }
+                },
+                shape = RoundedCornerShape(12.dp),
+                textStyle = TextStyle(fontSize = MaterialTheme.typography.h5.fontSize)
+            )
+        }
     }
 }
 
@@ -62,7 +96,7 @@ private fun TopRow() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
-    ){
+    ) {
         IconButton(
             onClick = { /*TODO*/ },
             modifier = Modifier.padding(5.dp)
@@ -75,12 +109,13 @@ private fun TopRow() {
         ButtonsRow()
     }
 }
+
 @Composable
 private fun ButtonsRow() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
-    ){
+    ) {
         IconButton(
             onClick = { /*Todo*/ },
             modifier = Modifier.padding(top = 5.dp)
@@ -127,13 +162,14 @@ private fun ButtonsRow() {
 //    }
 //}
 @Composable
-fun ColorButtonsRow(){
+fun ColorButtonsRow() {
     Row(
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         RoundedColorButton(onClick = {})
     }
 }
+
 @Composable
 fun RoundedColorButton(
     onClick: () -> Unit,
@@ -155,6 +191,7 @@ fun RoundedColorButton(
         )
     }
 }
+
 @ExperimentalAnimationApi
 @Preview(
     showBackground = true
@@ -163,8 +200,6 @@ fun RoundedColorButton(
 fun ShowAddNotePreview() {
     ZNoteTheme {
         AddNote(
-            title = "",
-            content = "",
 //            viewModel = viewModel(
 //                factory = NoteViewModelFactory(LocalContext.current.applicationContext as Application)
 //            )

@@ -33,15 +33,6 @@ fun Home(
         factory = NoteViewModelFactory(context.applicationContext as Application)
     )
     var customModifier = if(viewModel.newNoteState==NoteState.Collapsed) Modifier.padding(20.dp) else Modifier
-    viewModel.addNote(
-        Note(
-            0,
-            "Sample",
-            "this is an example text",
-            1,
-            false
-        )
-    )
     Scaffold(
         modifier= modifier
     ) {

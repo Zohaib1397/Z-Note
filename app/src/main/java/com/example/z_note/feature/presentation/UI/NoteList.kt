@@ -50,4 +50,5 @@ fun NoteScreen(
             }
         }
     }
+    Spacer(modifier = Modifier.height(30.dp))
 }

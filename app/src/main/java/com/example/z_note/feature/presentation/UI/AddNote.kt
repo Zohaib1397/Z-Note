@@ -18,10 +18,12 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -33,6 +35,7 @@ import com.example.z_note.feature.presentation.notes.NoteViewModel
 import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
 fun AddNote(
@@ -62,14 +65,17 @@ fun AddNote(
                 onNoteTextChange = {onNoteTitleChange(it)},
                 maxLines = 1,
                 maxLength = 20,
+                imeAction = ImeAction.Next,
                 placeholder = "Title",
-                textStyle = TextStyle(fontSize = MaterialTheme.typography.h5.fontSize)
+                textStyle = TextStyle(fontSize = MaterialTheme.typography.h6.fontSize)
             )
+            Spacer(modifier = Modifier.height(5.dp))
             CustomTextField(
                 noteText = noteContent,
                 onNoteTextChange = {onNoteContentChange(it)},
-                maxLines = 20,
+                maxLines = 40,
                 maxLength = 10000,
+                imeAction = ImeAction.Done,
                 placeholder = "Note",
                 modifier = Modifier
                     .fillMaxHeight(0.9f),
@@ -79,6 +85,7 @@ fun AddNote(
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 private fun CustomTextField(
     noteText:String,
@@ -86,6 +93,7 @@ private fun CustomTextField(
     placeholder: String,
     maxLines:Int,
     maxLength:Int,
+    imeAction: ImeAction,
     trailingIcon: ImageVector = Icons.Outlined.Close,
     trailingIconContent: String = "Clear Title",
     hasTrailingIcon: Boolean = true,
@@ -93,8 +101,9 @@ private fun CustomTextField(
     backgroundColor: Color = MaterialTheme.colors.surface,
     modifier:Modifier = Modifier
     ) {
+    var keyboardController = LocalSoftwareKeyboardController.current
     Column(
-        modifier = Modifier.padding(start = 20.dp,end = 20.dp)
+        modifier = Modifier.padding(start = 30.dp,end = 30.dp)
     ){
         Surface(
             elevation = 2.dp,
@@ -106,7 +115,7 @@ private fun CustomTextField(
                     if(it.length <= maxLength) onNoteTextChange(it)
                 },
                 placeholder = {
-                    Text(placeholder)
+                    Text(placeholder,fontSize = textStyle.fontSize)
                 },
                 modifier = modifier
                     .fillMaxWidth(),
@@ -119,7 +128,12 @@ private fun CustomTextField(
 //                    if(viewModel.noteTitle.isNotEmpty()){
                     if (hasTrailingIcon) {
                         IconButton(onClick = { /*TODO*/ }) {
-                            Icon(trailingIcon, contentDescription = trailingIconContent)
+                            Icon(
+                                trailingIcon,
+                                contentDescription = trailingIconContent,
+                                tint = if(noteText.length == maxLength)
+                                    MaterialTheme.colors.error else Color.Unspecified
+                            )
                         }
                     }
 //                }
@@ -127,10 +141,11 @@ private fun CustomTextField(
                 shape = RoundedCornerShape(12.dp),
                 textStyle = textStyle,
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
+                    imeAction = imeAction
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = { /*TODO*/ }
+                    onNext = { /*TODO*/ },
+                    onDone = { keyboardController!!.hide() }
                 ),
                 maxLines = maxLines
             )
@@ -260,6 +275,7 @@ fun RoundedColorButton(
     }
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Preview(
     showBackground = true

@@ -3,11 +3,13 @@ package com.example.z_note.feature.presentation
 import androidx.compose.animation.*
 import androidx.compose.animation.core.keyframes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.IntSize
 import com.example.z_note.feature.presentation.States.NoteState
 import com.example.z_note.feature.presentation.UI.AddNote
 import com.example.z_note.feature.presentation.notes.NoteViewModel
 
+@ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
 fun AnimateNewNote(
@@ -40,11 +42,12 @@ fun AnimateNewNote(
         if(targetState == NoteState.Collapsed){
             callComposable()
         }else {
-//            AddNote(
-//                title = addNoteTitle,
-//                content = addNoteContent,
-////                viewModel = viewModel
-//            )
+            AddNote(
+                noteTitle = viewModel.noteTitle,
+                noteContent = viewModel.noteContent,
+                onNoteTitleChange = viewModel::onNoteTitleChange,
+                onNoteContentChange = viewModel::onNoteContentChange
+            )
         }
     }
 }

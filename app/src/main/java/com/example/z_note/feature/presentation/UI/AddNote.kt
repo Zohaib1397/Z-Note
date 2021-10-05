@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.z_note.R
 import com.example.z_note.feature.domain.model.Note
+import com.example.z_note.feature.presentation.UI.GetColorOrIndex.Companion.getColor
 import com.example.z_note.ui.theme.ZNoteTheme
 
 private enum class ColorRowState {
@@ -56,12 +57,13 @@ fun AddNote(
     onNoteStateChange: () -> Unit,
     onAddNote: (Note) -> Unit
 ) {
-    var colorRowState by remember { mutableStateOf(ColorRowState.Collapsed) }
+    var currentID by remember{ mutableStateOf(0)}
+    var colorRowState by remember { mutableStateOf(ColorRowState.Expanded) }
 //    var textFieldEnabled by remember{mutableStateOf(false)}
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = color)
+            .background(color = getColor(currentID))
     ) {
         TopRow(
             noteTitle = noteTitle,
@@ -79,7 +81,10 @@ fun AddNote(
             }
         )
         AnimatedVisibility(colorRowState == ColorRowState.Expanded) {
-            ColorButtonsRow()
+            ColorButtonsRow(
+                currentID = currentID,
+                onCurrentIDChange = {currentID = it}
+            )
         }
         Spacer(modifier = Modifier.height(20.dp))
         Column(
@@ -99,7 +104,7 @@ fun AddNote(
                     fontWeight = FontWeight.Bold
                 )
             )
-            Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             CustomTextField(
                 noteText = noteContent,
                 onNoteTextChange = { onNoteContentChange(it) },
@@ -116,6 +121,7 @@ fun AddNote(
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 private fun CustomTextField(
@@ -133,71 +139,78 @@ private fun CustomTextField(
     modifier: Modifier = Modifier
 ) {
     var keyboardController = LocalSoftwareKeyboardController.current
-    Column(
-        modifier = Modifier.padding(start = 30.dp, end = 30.dp)
-    ) {
+
         Surface(
+            modifier = Modifier.padding(start = 30.dp, end = 30.dp),
             elevation = 2.dp,
             shape = RoundedCornerShape(20.dp)
         ) {
-            TextField(
-                value = noteText,
-                onValueChange = {
-                    if (it.length <= maxLength) onNoteTextChange(it)
-                },
-                placeholder = {
-                    Text(placeholder, fontSize = textStyle.fontSize)
-                },
-                modifier = modifier
-                    .fillMaxWidth(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = backgroundColor,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent
-                ),
-                trailingIcon = {
-                    if (noteText.isNotEmpty()) {
-                        if (hasTrailingIcon) {
-                            IconButton(onClick = { onNoteTextChange("") }) {
-                                Icon(
-                                    trailingIcon,
-                                    contentDescription = trailingIconContent,
-                                    tint = if (noteText.length == maxLength)
-                                        MaterialTheme.colors.error else MaterialTheme.colors.onSurface
-                                )
+            Column(
+
+            ) {
+                    TextField(
+                        value = noteText,
+                        onValueChange = {
+                            if (it.length <= maxLength) onNoteTextChange(it)
+                        },
+                        placeholder = {
+                            Text(placeholder, fontSize = textStyle.fontSize)
+                        },
+                        modifier = modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            backgroundColor = backgroundColor,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent
+                        ),
+                        trailingIcon = {
+                            if (noteText.isNotEmpty()) {
+                                if (hasTrailingIcon) {
+                                    IconButton(onClick = { onNoteTextChange("") }) {
+                                        Icon(
+                                            trailingIcon,
+                                            contentDescription = trailingIconContent,
+                                            tint = if (noteText.length == maxLength)
+                                                MaterialTheme.colors.error else MaterialTheme.colors.onSurface
+                                        )
+                                    }
+                                }
                             }
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        textStyle = textStyle,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = imeAction
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { /*TODO*/ },
+                            onDone = { keyboardController!!.hide() }
+                        ),
+                        maxLines = maxLines
+                    )
+//                    Spacer(modifier = Modifier.height(5.dp))
+                    AnimatedVisibility(noteText.isNotEmpty()){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp, end = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            if (noteText.length == maxLength) {
+                                Text("Reached max limit", color = MaterialTheme.colors.error)
+                            } else {
+                                Spacer(modifier = Modifier)
+                            }
+                            Text(
+                                "${noteText.length}/$maxLength",
+                                color = if (noteText.length == maxLength)
+                                    MaterialTheme.colors.error else Color.Unspecified
+                            )
                         }
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
-                },
-                shape = RoundedCornerShape(12.dp),
-                textStyle = textStyle,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = imeAction
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = { /*TODO*/ },
-                    onDone = { keyboardController!!.hide() }
-                ),
-                maxLines = maxLines
-            )
+                }
         }
-        Spacer(modifier = Modifier.height(5.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            if (noteText.length == maxLength) {
-                Text("Reached max limit", color = MaterialTheme.colors.error)
-            } else {
-                Spacer(modifier = Modifier)
-            }
-            Text(
-                "${noteText.length}/$maxLength",
-                color = if (noteText.length == maxLength)
-                    MaterialTheme.colors.error else Color.Unspecified
-            )
-        }
-    }
 }
 
 /*This Composable is Placed on top of the AddNote menu
@@ -316,18 +329,46 @@ private fun ButtonsRow(
 }
 
 @Composable
-fun ColorButtonsRow() {
+fun ColorButtonsRow(
+    currentID: Int,
+    onCurrentIDChange:(Int) -> Unit
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
+        modifier = Modifier
+            .padding(start = 20.dp, end = 20.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        var currentID by remember{ mutableStateOf(0)}
+
+        RoundedColorButton(
+            id = 0,
+            currentID,
+            onClick = { onCurrentIDChange(it) }
+        )
         RoundedColorButton(
             id = 1,
             currentID,
-            onClick = {
-                currentID = it
-            }
+            onClick = { onCurrentIDChange(it) }
+        )
+        RoundedColorButton(
+            id = 2,
+            currentID,
+            onClick = { onCurrentIDChange(it) }
+        )
+        RoundedColorButton(
+            id = 3,
+            currentID,
+            onClick = { onCurrentIDChange(it) }
+        )
+        RoundedColorButton(
+            id = 4,
+            currentID,
+            onClick = { onCurrentIDChange(it) }
+        )
+        RoundedColorButton(
+            id = 5,
+            currentID,
+            onClick = { onCurrentIDChange(it) }
         )
     }
 }
@@ -351,7 +392,7 @@ fun RoundedColorButton(
         Icon(
             painter = painterResource(id = R.drawable.ic_filled_circle),
             contentDescription = contentDescription,
-            tint = color,
+            tint = getColor(id),
             modifier = Modifier
                 .border(
                     border = borderThickness,

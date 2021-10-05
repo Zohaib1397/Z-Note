@@ -70,6 +70,9 @@ dependencies {
 
     implementation 'com.puculek.pulltorefresh:pull-to-refresh-compose:1.0.6'
 
+
+    // Status Bar Modification
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
     // optional - RxJava2 support for Room
     implementation "androidx.room:room-rxjava2:$room_version"
 

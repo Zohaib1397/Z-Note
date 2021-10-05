@@ -1,6 +1,10 @@
 package com.example.z_note.feature.presentation.UI
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,7 +19,7 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -31,6 +35,11 @@ import com.example.z_note.R
 import com.example.z_note.feature.domain.model.Note
 import com.example.z_note.ui.theme.ZNoteTheme
 
+private enum class ColorRowState{
+    Collapsed,
+    Expanded
+}
+
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
@@ -44,20 +53,29 @@ fun AddNote(
     onNoteStateChange: () -> Unit,
     onAddNote: (Note) -> Unit
 ) {
+    var colorRowState by remember{mutableStateOf(ColorRowState.Collapsed)}
+//    var textFieldEnabled by remember{mutableStateOf(false)}
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(color = color)
     ) {
         TopRow(
-            onNoteStateChange
+            onNoteStateChange,
+            onColorRowStateChange = {
+                colorRowState = when(colorRowState){
+                    ColorRowState.Expanded -> ColorRowState.Collapsed
+                    ColorRowState.Collapsed -> ColorRowState.Expanded
+                }
+            }
         )
-//        ColorsRow(
-//            viewModel
-//        )
+        AnimatedVisibility(colorRowState == ColorRowState.Expanded){
+            ColorButtonsRow()
+        }
         Spacer(modifier = Modifier.height(20.dp))
         Column(
-            modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomTextField( // For Note Title
@@ -175,7 +193,10 @@ buttons can be implemented on conditions
 
 * */
 @Composable
-private fun TopRow(onNoteStateChange: () -> Unit) {
+private fun TopRow(
+    onNoteStateChange: () -> Unit,
+    onColorRowStateChange: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -189,23 +210,36 @@ private fun TopRow(onNoteStateChange: () -> Unit) {
                 contentDescription = "Close Button"
             )
         }
-        ButtonsRow()
+        ButtonsRow(
+            onColorRowStateChange
+        )
     }
 }
 
 @Composable
-private fun ButtonsRow() {
+private fun ButtonsRow(
+    onColorRowStateChange: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
+        IconButton(
+            onClick = onColorRowStateChange,
+            modifier = Modifier.padding(top = 5.dp)
+        ) {
+            Icon(
+                painterResource(R.drawable.ic_color_lens),
+                contentDescription = "Colors Button"
+            )
+        }
         IconButton(
             onClick = { /*Todo*/ },
             modifier = Modifier.padding(top = 5.dp)
         ) {
             Icon(
                 Icons.Outlined.Notifications,
-                contentDescription = "Share Button"
+                contentDescription = "Set Reminder"
             )
         }
         IconButton(
@@ -227,28 +261,32 @@ private fun ButtonsRow() {
     }
 }
 
-//@ExperimentalAnimationApi
-//@Composable
-//fun ColorsRow(
-//    viewModel: NoteViewModel
-//) {
-//    AnimatedContent(
-////        transitionSpec = {
-////            tween(
-////                durationMillis = 300,
-////                easing = LinearOutSlowInEasing
-////            )
-////        },
-//        targetState = viewModel.colorRowState == ColorRowState.Expanded
-//    ){
-//        ColorButtonsRow()
-//    }
-//}
+@ExperimentalAnimationApi
+@Composable
+private fun ColorsRow(
+    colorRowState: ColorRowState
+) {
+    if(colorRowState == ColorRowState.Expanded){
+        AnimatedContent(
+//        transitionSpec = {
+//            tween(
+//                durationMillis = 300,
+//                easing = LinearOutSlowInEasing
+//            )
+//        },
+            targetState = colorRowState == ColorRowState.Expanded
+        ) {
+            ColorButtonsRow()
+        }
+    }
+}
 @Composable
 fun ColorButtonsRow() {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
+        RoundedColorButton(onClick = {})
         RoundedColorButton(onClick = {})
     }
 }

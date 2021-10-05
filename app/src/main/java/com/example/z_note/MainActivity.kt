@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.z_note.feature.presentation.UI.Home
 import com.example.z_note.ui.theme.ZNoteTheme
-//import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class MainActivity : ComponentActivity() {
     @ExperimentalComposeUiApi
@@ -33,16 +33,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background,
                     modifier = Modifier.fillMaxSize()
                 ) {
-//                    val systemUiController = rememberSystemUiController()
-//                    if(isSystemInDarkTheme()){
-//                        systemUiController.setSystemBarsColor(
-//                            color = Color.Transparent
-//                        )
-//                    }else{
-//                        systemUiController.setSystemBarsColor(
-//                            color = Color.White
-//                        )
-//                    }
+                    val systemUiController = rememberSystemUiController()
+                    systemUiController.setSystemBarsColor(
+                        color = if(isSystemInDarkTheme()) Color.Transparent else Color.White
+                    )
                     Home()
                 }
             }

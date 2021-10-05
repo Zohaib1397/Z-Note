@@ -54,7 +54,8 @@ fun AnimateNewNote(
                 noteContent = viewModel.noteContent,
                 onNoteTitleChange = viewModel::onNoteTitleChange,
                 onNoteContentChange = viewModel::onNoteContentChange,
-                onNoteStateChange = viewModel::onNewNoteStateChange
+                onNoteStateChange = viewModel::onNewNoteStateChange,
+                onAddNote = viewModel::addNote
             )
         }
     }

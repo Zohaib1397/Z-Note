@@ -39,7 +39,6 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-
     var noteBackgroundColor = mutableListOf<androidx.compose.ui.graphics.Color>()
     fun setNoteColors(notes: List<Note>){
         for(item in notes){

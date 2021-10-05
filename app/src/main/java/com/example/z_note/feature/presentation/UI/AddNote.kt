@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.z_note.R
+import com.example.z_note.feature.domain.model.Note
 import com.example.z_note.ui.theme.ZNoteTheme
 
 @ExperimentalComposeUiApi
@@ -40,7 +41,8 @@ fun AddNote(
     onNoteContentChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.surface,
-    onNoteStateChange: () -> Unit
+    onNoteStateChange: () -> Unit,
+    onAddNote: (Note) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -124,14 +126,14 @@ private fun CustomTextField(
                 ),
                 trailingIcon = {
                     if(noteText.isNotEmpty()){
-                    if (hasTrailingIcon) {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                trailingIcon,
-                                contentDescription = trailingIconContent,
-                                tint = if(noteText.length == maxLength)
-                                    MaterialTheme.colors.error else Color.Unspecified
-                                )
+                        if (hasTrailingIcon) {
+                            IconButton(onClick = { onNoteTextChange("")}) {
+                                Icon(
+                                    trailingIcon,
+                                    contentDescription = trailingIconContent,
+                                    tint = if(noteText.length == maxLength)
+                                        MaterialTheme.colors.error else MaterialTheme.colors.onSurface
+                                    )
                             }
                         }
                     }
@@ -286,7 +288,8 @@ fun ShowAddNotePreview() {
             noteContent = "",
             onNoteTitleChange = {},
             onNoteContentChange = {},
-            onNoteStateChange = {}
+            onNoteStateChange = {},
+            onAddNote = fun (Note){}
         )
     }
 }

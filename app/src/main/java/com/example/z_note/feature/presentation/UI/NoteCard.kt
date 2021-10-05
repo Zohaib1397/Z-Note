@@ -50,7 +50,6 @@ fun NoteCard(
     noteTitle:String,
     noteContent:String,
     noteColor:Color,
-    getNoteColorFromIndex:Int,
     currentNoteIndex:Int,
 
 ) {
@@ -234,7 +233,6 @@ fun previewTodoCard() {
             noteTitle = "Note Title",
             noteContent = "This is a sample note",
             noteColor = Color.White,
-            getNoteColorFromIndex = 1,
             currentNoteIndex = 0,
         )
     }

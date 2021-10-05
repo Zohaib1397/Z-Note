@@ -1,5 +1,6 @@
 package com.example.z_note.feature.presentation.UI
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -25,9 +26,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,7 +38,7 @@ import com.example.z_note.R
 import com.example.z_note.feature.domain.model.Note
 import com.example.z_note.ui.theme.ZNoteTheme
 
-private enum class ColorRowState{
+private enum class ColorRowState {
     Collapsed,
     Expanded
 }
@@ -44,8 +47,8 @@ private enum class ColorRowState{
 @ExperimentalAnimationApi
 @Composable
 fun AddNote(
-    noteTitle:String,
-    noteContent:String,
+    noteTitle: String,
+    noteContent: String,
     onNoteTitleChange: (String) -> Unit,
     onNoteContentChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -53,7 +56,7 @@ fun AddNote(
     onNoteStateChange: () -> Unit,
     onAddNote: (Note) -> Unit
 ) {
-    var colorRowState by remember{mutableStateOf(ColorRowState.Collapsed)}
+    var colorRowState by remember { mutableStateOf(ColorRowState.Collapsed) }
 //    var textFieldEnabled by remember{mutableStateOf(false)}
     Column(
         modifier = modifier
@@ -61,15 +64,21 @@ fun AddNote(
             .background(color = color)
     ) {
         TopRow(
-            onNoteStateChange,
+            noteTitle = noteTitle,
+            noteContent = noteContent,
+            onNoteContentChange = onNoteContentChange,
+            onNoteTitleChange = onNoteTitleChange,
+//            color = Color TODO
+            onNoteStateChange = onNoteStateChange,
+            onAddNote = onAddNote,
             onColorRowStateChange = {
-                colorRowState = when(colorRowState){
+                colorRowState = when (colorRowState) {
                     ColorRowState.Expanded -> ColorRowState.Collapsed
                     ColorRowState.Collapsed -> ColorRowState.Expanded
                 }
             }
         )
-        AnimatedVisibility(colorRowState == ColorRowState.Expanded){
+        AnimatedVisibility(colorRowState == ColorRowState.Expanded) {
             ColorButtonsRow()
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -80,17 +89,20 @@ fun AddNote(
         ) {
             CustomTextField( // For Note Title
                 noteText = noteTitle,
-                onNoteTextChange = {onNoteTitleChange(it)},
+                onNoteTextChange = { onNoteTitleChange(it) },
                 maxLines = 1,
                 maxLength = 20,
                 imeAction = ImeAction.Next,
                 placeholder = "Title",
-                textStyle = TextStyle(fontSize = MaterialTheme.typography.h6.fontSize)
+                textStyle = TextStyle(
+                    fontSize = MaterialTheme.typography.subtitle2.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
             )
             Spacer(modifier = Modifier.height(5.dp))
             CustomTextField(
                 noteText = noteContent,
-                onNoteTextChange = {onNoteContentChange(it)},
+                onNoteTextChange = { onNoteContentChange(it) },
                 maxLines = 40,
                 maxLength = 10000,
                 imeAction = ImeAction.Done,
@@ -98,6 +110,7 @@ fun AddNote(
                 modifier = Modifier
                     .fillMaxHeight(0.9f),
                 hasTrailingIcon = false,
+                textStyle = TextStyle(fontSize = MaterialTheme.typography.body2.fontSize)
             )
         }
     }
@@ -106,23 +119,23 @@ fun AddNote(
 @ExperimentalComposeUiApi
 @Composable
 private fun CustomTextField(
-    noteText:String,
-    onNoteTextChange:(String) -> Unit,
+    noteText: String,
+    onNoteTextChange: (String) -> Unit,
     placeholder: String,
-    maxLines:Int,
-    maxLength:Int,
+    maxLines: Int,
+    maxLength: Int,
     imeAction: ImeAction,
     trailingIcon: ImageVector = Icons.Outlined.Close,
     trailingIconContent: String = "Clear Title",
     hasTrailingIcon: Boolean = true,
     textStyle: TextStyle = TextStyle(),
     backgroundColor: Color = MaterialTheme.colors.surface,
-    modifier:Modifier = Modifier
-    ) {
+    modifier: Modifier = Modifier
+) {
     var keyboardController = LocalSoftwareKeyboardController.current
     Column(
-        modifier = Modifier.padding(start = 30.dp,end = 30.dp)
-    ){
+        modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+    ) {
         Surface(
             elevation = 2.dp,
             shape = RoundedCornerShape(20.dp)
@@ -130,10 +143,10 @@ private fun CustomTextField(
             TextField(
                 value = noteText,
                 onValueChange = {
-                    if(it.length <= maxLength) onNoteTextChange(it)
+                    if (it.length <= maxLength) onNoteTextChange(it)
                 },
                 placeholder = {
-                    Text(placeholder,fontSize = textStyle.fontSize)
+                    Text(placeholder, fontSize = textStyle.fontSize)
                 },
                 modifier = modifier
                     .fillMaxWidth(),
@@ -143,15 +156,15 @@ private fun CustomTextField(
                     focusedBorderColor = Color.Transparent
                 ),
                 trailingIcon = {
-                    if(noteText.isNotEmpty()){
+                    if (noteText.isNotEmpty()) {
                         if (hasTrailingIcon) {
-                            IconButton(onClick = { onNoteTextChange("")}) {
+                            IconButton(onClick = { onNoteTextChange("") }) {
                                 Icon(
                                     trailingIcon,
                                     contentDescription = trailingIconContent,
-                                    tint = if(noteText.length == maxLength)
+                                    tint = if (noteText.length == maxLength)
                                         MaterialTheme.colors.error else MaterialTheme.colors.onSurface
-                                    )
+                                )
                             }
                         }
                     }
@@ -172,14 +185,15 @@ private fun CustomTextField(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
-            if(noteText.length == maxLength){
-                Text("Reached max limit",color = MaterialTheme.colors.error)
-            }else{
-                Spacer(modifier= Modifier)
+        ) {
+            if (noteText.length == maxLength) {
+                Text("Reached max limit", color = MaterialTheme.colors.error)
+            } else {
+                Spacer(modifier = Modifier)
             }
-            Text("${noteText.length}/$maxLength",
-                color = if(noteText.length == maxLength)
+            Text(
+                "${noteText.length}/$maxLength",
+                color = if (noteText.length == maxLength)
                     MaterialTheme.colors.error else Color.Unspecified
             )
         }
@@ -194,7 +208,13 @@ buttons can be implemented on conditions
 * */
 @Composable
 private fun TopRow(
+    noteTitle: String,
+    noteContent: String,
+    onNoteContentChange: (String) -> Unit,
+    onNoteTitleChange: (String) -> Unit,
+//    color: Color
     onNoteStateChange: () -> Unit,
+    onAddNote: (Note) -> Unit,
     onColorRowStateChange: () -> Unit
 ) {
     Row(
@@ -211,15 +231,30 @@ private fun TopRow(
             )
         }
         ButtonsRow(
-            onColorRowStateChange
+            noteTitle = noteTitle,
+            noteContent = noteContent,
+            onNoteContentChange = onNoteContentChange,
+            onNoteTitleChange = onNoteTitleChange,
+//            color = Color
+            onAddNote = onAddNote,
+            onColorRowStateChange = onColorRowStateChange,
+            onNoteStateChange = onNoteStateChange
         )
     }
 }
 
 @Composable
 private fun ButtonsRow(
-    onColorRowStateChange: () -> Unit
+    noteTitle: String,
+    noteContent: String,
+    onNoteTitleChange: (String) -> Unit,
+    onNoteContentChange: (String) -> Unit,
+//    color:Color
+    onAddNote: (Note) -> Unit,
+    onColorRowStateChange: () -> Unit,
+    onNoteStateChange: () -> Unit
 ) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
@@ -252,7 +287,26 @@ private fun ButtonsRow(
             )
         }
         Button(
-            onClick = { /*Todo*/ },
+            onClick = {
+                if (noteTitle.isEmpty() && noteContent.isEmpty()) {
+                    Toast.makeText(context, "Discarded Empty Note", Toast.LENGTH_SHORT).show()
+                    onNoteStateChange()
+                } else {
+                    onAddNote(
+                        Note(
+                            title = noteTitle,
+                            text = noteContent,
+                            color = 0,
+                            isTodo = false,
+                            id = 0
+                        )
+                    )
+                    Toast.makeText(context, "Note Added", Toast.LENGTH_SHORT).show()
+                    onNoteTitleChange("")
+                    onNoteContentChange("")
+                    onNoteStateChange()
+                }
+            },
             modifier = Modifier.padding(10.dp),
             shape = RoundedCornerShape(20.dp)
         ) {
@@ -261,44 +315,39 @@ private fun ButtonsRow(
     }
 }
 
-@ExperimentalAnimationApi
-@Composable
-private fun ColorsRow(
-    colorRowState: ColorRowState
-) {
-    if(colorRowState == ColorRowState.Expanded){
-        AnimatedContent(
-//        transitionSpec = {
-//            tween(
-//                durationMillis = 300,
-//                easing = LinearOutSlowInEasing
-//            )
-//        },
-            targetState = colorRowState == ColorRowState.Expanded
-        ) {
-            ColorButtonsRow()
-        }
-    }
-}
 @Composable
 fun ColorButtonsRow() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        RoundedColorButton(onClick = {})
-        RoundedColorButton(onClick = {})
+        var currentID by remember{ mutableStateOf(0)}
+        RoundedColorButton(
+            id = 1,
+            currentID,
+            onClick = {
+                currentID = it
+            }
+        )
     }
 }
 
 @Composable
 fun RoundedColorButton(
-    onClick: () -> Unit,
+    id:Int,
+    currentID:Int,
+    onClick: (Int) -> Unit,
     borderThickness: BorderStroke = BorderStroke(1.dp, Color.Gray),
     color: Color = Color.Unspecified,
     contentDescription: String = "White Color"
 ) {
-    IconButton(onClick = onClick) {
+    IconButton(
+        onClick = { onClick(id) },
+        modifier = Modifier.border(
+            border = BorderStroke(3.dp,if(id==currentID) Color.Black else Color.Transparent),
+            shape = CircleShape
+        )
+    ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_filled_circle),
             contentDescription = contentDescription,
@@ -327,7 +376,7 @@ fun ShowAddNotePreview() {
             onNoteTitleChange = {},
             onNoteContentChange = {},
             onNoteStateChange = {},
-            onAddNote = fun (Note){}
+            onAddNote = fun(Note) {}
         )
     }
 }

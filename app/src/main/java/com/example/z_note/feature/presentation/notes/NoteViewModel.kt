@@ -45,9 +45,6 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
             noteBackgroundColor.add(noteColors[item.color])
         }
     }
-    fun getNoteColor(index :Int): androidx.compose.ui.graphics.Color {
-        return noteBackgroundColor[index]
-    }
 
 // /*
 // Default Note Title And Content Text

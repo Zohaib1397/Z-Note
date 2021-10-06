@@ -1,10 +1,13 @@
 package com.example.z_note.feature.presentation
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,29 +29,14 @@ fun AnimateNewNote(
     noteState: NoteState,
     callComposable: @Composable () -> Unit
 ) {
-    AnimatedContent(
-        targetState =  noteState,
-        transitionSpec = {
-            fadeIn(animationSpec = tween(150,150)) with
-            fadeOut(animationSpec = tween(150)) using
-                    SizeTransform{ initialSize, targetSize ->
-                        if(targetState==NoteState.Expanded){
-                            keyframes{
-                                IntSize(targetSize.width,initialSize.height) at 150
-                                durationMillis = 300
-                            }
-                        } else {
-                            keyframes{
-                                IntSize(initialSize.width,targetSize.height) at 150
-                                durationMillis = 300
-                            }
-                        }
-                    }
-        }
-    ){ targetState ->
-        if(targetState == NoteState.Collapsed){
+    Surface(
+        modifier = Modifier.animateContentSize(
+
+        )
+    ){
+        if (noteState == NoteState.Collapsed) {
             callComposable()
-        }else {
+        } else {
             AddNote(
                 noteTitle = viewModel.noteTitle,
                 noteContent = viewModel.noteContent,

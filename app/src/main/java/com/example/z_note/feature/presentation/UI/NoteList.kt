@@ -1,21 +1,30 @@
 package com.example.z_note.feature.presentation.UI
 
 import android.content.res.Configuration
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.z_note.feature.presentation.AnimateNewNote
 import com.example.z_note.feature.presentation.States.LayoutState
 import com.example.z_note.feature.presentation.UI.GetColorOrIndex.Companion.getColor
 import com.example.z_note.feature.presentation.notes.NoteViewModel
 import com.puculek.pulltorefresh.PullToRefresh
 
+@ExperimentalAnimationApi
+@ExperimentalComposeUiApi
 @Composable
 fun NoteScreen(
     viewModel: NoteViewModel,
@@ -44,7 +53,8 @@ fun NoteScreen(
                 NoteCard(
                     note = item,
                     currentNoteIndex = index,
-                    onDeleteNote = viewModel::deleteNote
+                    onDeleteNote = viewModel::deleteNote,
+                    viewModel = viewModel
                 )
             }
         }

@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -35,6 +37,11 @@ import com.example.z_note.feature.presentation.notes.NoteViewModel
 import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
+private enum class EditNoteState{
+    Collapsed,
+    Expanded
+}
+
 
 /*
 * Note Card
@@ -49,14 +56,18 @@ import com.example.z_note.ui.theme.ZNoteTheme
 * -- here Lambda functions are useful
 * */
 
-@SuppressLint("RememberReturnType")
+@ExperimentalAnimationApi
+@ExperimentalComposeUiApi
 @Composable
 fun NoteCard(
     note:Note,
     modifier:Modifier = Modifier,
     currentNoteIndex:Int,
-    onDeleteNote:(Note) -> Unit
+    onDeleteNote:(Note) -> Unit,
+//    onEditNote:() -> Unit,
+    viewModel: NoteViewModel
 ) {
+    var editNoteState by remember {mutableStateOf(EditNoteState.Collapsed)}
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
@@ -68,17 +79,40 @@ fun NoteCard(
         }
 
     }
-    NoteCardView(
-        note = note,
-        currentNoteIndex,
-        noteState,
-        arrowRotate,
-        modifier,
-        onDeleteNote
+    val onEditNoteStateChange = {
+        editNoteState = when(editNoteState){
+            EditNoteState.Collapsed -> EditNoteState.Expanded
+            EditNoteState.Expanded -> EditNoteState.Collapsed
+        }
+    }
+    Surface(
+        modifier = Modifier.animateContentSize()
     ){
-        noteState = when(noteState){
-            NoteState.Collapsed -> NoteState.Expanded
-            NoteState.Expanded -> NoteState.Collapsed
+        if(editNoteState == EditNoteState.Collapsed){
+            NoteCardView(
+                note = note,
+                currentNoteIndex,
+                noteState,
+                arrowRotate,
+                modifier,
+                onDeleteNote,
+                onEditNote = onEditNoteStateChange,
+            ) {
+                noteState = when (noteState) {
+                    NoteState.Collapsed -> NoteState.Expanded
+                    NoteState.Expanded -> NoteState.Collapsed
+                }
+            }
+        }else{
+            AddNote(
+                noteTitle = note.title,
+                noteContent = note.text,
+                color = getColor(note.color),
+                onNoteTitleChange = viewModel::onNoteTitleChange,
+                onNoteContentChange = viewModel::onNoteContentChange,
+                onNoteStateChange = onEditNoteStateChange,
+                onAddNote = viewModel::addNote
+            )
         }
     }
 }
@@ -97,6 +131,7 @@ private fun NoteCardView(
     arrowRotate: Float,
     modifier:Modifier = Modifier,
     onDeleteNote: (Note) -> Unit,
+    onEditNote: () -> Unit,
     onNoteStateChange:() -> Unit
 ) {
     Card(
@@ -112,7 +147,8 @@ private fun NoteCardView(
             noteState,
             arrowRotate,
             onNoteStateChange,
-            onDeleteNote
+            onDeleteNote,
+            onEditNote
         )
     }
 }
@@ -129,7 +165,8 @@ private fun NoteColumnView(
     noteState: NoteState,
     arrowRotate: Float,
     onNoteStateChange: () -> Unit,
-    onDeleteNote: (Note) -> Unit
+    onDeleteNote: (Note) -> Unit,
+    onEditNote: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -153,7 +190,8 @@ private fun NoteColumnView(
             currentNoteIndex,
             noteState,
             onNoteStateChange,
-            onDeleteNote
+            onDeleteNote,
+            onEditNote
         )
     }
 }
@@ -196,14 +234,17 @@ private fun ExpandedState(
     currentNoteIndex: Int,
     noteState: NoteState,
     onNoteStateChange: () -> Unit,
-    onDeleteNote: (Note) -> Unit
+    onDeleteNote: (Note) -> Unit,
+    onEditNote: () -> Unit
 ) {
     if(noteState == NoteState.Expanded){
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                onEditNote()
+            }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_edit),
                     contentDescription = "Edit Todo"
@@ -223,6 +264,8 @@ private fun ExpandedState(
     }
 }
 
+@ExperimentalComposeUiApi
+@ExperimentalAnimationApi
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     name = "Dark Mode",
@@ -235,7 +278,9 @@ fun previewTodoCard() {
         NoteCard(
             note = Note(0,"Note Title","This is a sample note",1,false),
             currentNoteIndex = 0,
-            onDeleteNote = fun (Note){}
+            onDeleteNote = fun (Note){},
+//            onEditNote = {},
+            viewModel = viewModel(factory = NoteViewModelFactory(LocalContext.current as Application)) as NoteViewModel
         )
     }
 }

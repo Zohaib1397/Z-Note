@@ -10,4 +10,6 @@ class NoteRepository(
     fun getAllNotes():LiveData<List<Note>> = dao.getAllNotes()
 
     suspend fun addNote(note:Note) = dao.addNote(note)
+
+    suspend fun deleteNote(note:Note) =dao.deleteNote(note)
 }

@@ -1,6 +1,7 @@
 package com.example.z_note.feature.presentation.UI
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
 import android.widget.Toast
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,10 +25,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.z_note.R
+import com.example.z_note.feature.domain.model.Note
 import com.example.z_note.feature.domain.model.Note.Companion.noteColors
 import com.example.z_note.feature.presentation.States.NoteState
+import com.example.z_note.feature.presentation.UI.GetColorOrIndex.Companion.getColor
 import com.example.z_note.feature.presentation.notes.NoteViewModel
+import com.example.z_note.feature.presentation.notes.NoteViewModelFactory
 import com.example.z_note.ui.theme.ZNoteTheme
 
 
@@ -46,16 +52,11 @@ import com.example.z_note.ui.theme.ZNoteTheme
 @SuppressLint("RememberReturnType")
 @Composable
 fun NoteCard(
+    note:Note,
     modifier:Modifier = Modifier,
-    noteTitle:String,
-    noteContent:String,
-    noteColor:Color,
     currentNoteIndex:Int,
-
+    onDeleteNote:(Note) -> Unit
 ) {
-
-//    val noteIndex by rememberSaveable(currentNoteIndex) {mutableStateOf(getNoteColorFromIndex)}
-//    val noteColor =noteColors[noteIndex] //this noteColors is from Entity's Class Companion Object
     var noteState by remember{ mutableStateOf(NoteState.Collapsed)}
     val transition = updateTransition(targetState = noteState,label = "Expanded State")
     val arrowRotate by transition.animateFloat(
@@ -68,13 +69,12 @@ fun NoteCard(
 
     }
     NoteCardView(
-        noteTitle,
-        noteContent,
-        noteColor,
+        note = note,
         currentNoteIndex,
         noteState,
         arrowRotate,
-        modifier
+        modifier,
+        onDeleteNote
     ){
         noteState = when(noteState){
             NoteState.Collapsed -> NoteState.Expanded
@@ -91,13 +91,12 @@ fun NoteCard(
 
 @Composable
 private fun NoteCardView(
-    noteTitle:String,
-    noteContent: String,
-    noteColor: Color,
+    note:Note,
     currentNoteIndex: Int,
     noteState: NoteState,
     arrowRotate: Float,
     modifier:Modifier = Modifier,
+    onDeleteNote: (Note) -> Unit,
     onNoteStateChange:() -> Unit
 ) {
     Card(
@@ -108,13 +107,12 @@ private fun NoteCardView(
         elevation = 2.dp
     ) {
         NoteColumnView(
-            noteTitle,
-            noteContent,
-            noteColor,
+            note = note,
             currentNoteIndex,
             noteState,
             arrowRotate,
-            onNoteStateChange
+            onNoteStateChange,
+            onDeleteNote
         )
     }
 }
@@ -126,36 +124,36 @@ private fun NoteCardView(
 * */
 @Composable
 private fun NoteColumnView(
-    noteTitle: String,
-    noteContent: String,
-    noteColor:Color,
+    note:Note,
     currentNoteIndex: Int,
     noteState: NoteState,
     arrowRotate: Float,
-    onNoteStateChange: () -> Unit
+    onNoteStateChange: () -> Unit,
+    onDeleteNote: (Note) -> Unit
 ) {
     Column(
         modifier = Modifier
-            .background(color = noteColor)
+            .background(color = getColor(note.color))
             .animateContentSize()
     ){
         Text(
-            text = noteTitle,
+            text = note.title,
             fontWeight = FontWeight(700),
             modifier = Modifier.padding(start = 20.dp,top = 12.dp)
         )
         //This Composable contains NoteContent and Arrow
         NoteExpandableRowView(
-            noteContent,
+            note,
             arrowRotate,
             onNoteStateChange
         )
         //This Composable is the expanded view
         ExpandedState(
-            noteTitle,
-            noteContent,
+            note,
             currentNoteIndex,
             noteState,
+            onNoteStateChange,
+            onDeleteNote
         )
     }
 }
@@ -165,7 +163,7 @@ private fun NoteColumnView(
 * */
 @Composable
 private fun NoteExpandableRowView(
-    noteContent: String,
+    note:Note,
     arrowRotate: Float,
     onNoteStateChange: () -> Unit
 ) {
@@ -175,7 +173,7 @@ private fun NoteExpandableRowView(
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            text = noteContent,
+            text = note.text,
             modifier = Modifier
                 .padding(start = 20.dp, bottom = 12.dp)
                 .fillMaxWidth(0.8f)
@@ -194,10 +192,11 @@ private fun NoteExpandableRowView(
 
 @Composable
 private fun ExpandedState(
-    noteTitle: String,
-    noteContent: String,
+    note:Note,
     currentNoteIndex: Int,
-    noteState: NoteState
+    noteState: NoteState,
+    onNoteStateChange: () -> Unit,
+    onDeleteNote: (Note) -> Unit
 ) {
     if(noteState == NoteState.Expanded){
         Row(
@@ -210,7 +209,11 @@ private fun ExpandedState(
                     contentDescription = "Edit Todo"
                 )
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                onDeleteNote(note)
+                onNoteStateChange()
+            }
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_delete),
                     contentDescription = "Delete Todo"
@@ -230,10 +233,9 @@ private fun ExpandedState(
 fun previewTodoCard() {
     ZNoteTheme {
         NoteCard(
-            noteTitle = "Note Title",
-            noteContent = "This is a sample note",
-            noteColor = Color.White,
+            note = Note(0,"Note Title","This is a sample note",1,false),
             currentNoteIndex = 0,
+            onDeleteNote = fun (Note){}
         )
     }
 }

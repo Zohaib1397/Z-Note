@@ -2,6 +2,7 @@ package com.example.z_note.feature.data.data_source
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.z_note.feature.domain.model.Note
@@ -14,4 +15,7 @@ interface NoteDao {
 
     @Insert
     suspend fun addNote(note:Note)
+
+    @Delete
+    suspend fun deleteNote(note:Note)
 }

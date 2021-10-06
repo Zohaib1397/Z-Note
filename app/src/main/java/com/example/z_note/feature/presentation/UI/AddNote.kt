@@ -1,11 +1,8 @@
 package com.example.z_note.feature.presentation.UI
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,7 +55,7 @@ fun AddNote(
     onAddNote: (Note) -> Unit
 ) {
     var currentID by remember{ mutableStateOf(0)}
-    var colorRowState by remember { mutableStateOf(ColorRowState.Expanded) }
+    var colorRowState by remember { mutableStateOf(ColorRowState.Collapsed) }
 //    var textFieldEnabled by remember{mutableStateOf(false)}
     Column(
         modifier = modifier
@@ -68,6 +65,7 @@ fun AddNote(
         TopRow(
             noteTitle = noteTitle,
             noteContent = noteContent,
+            currentID = currentID,
             onNoteContentChange = onNoteContentChange,
             onNoteTitleChange = onNoteTitleChange,
 //            color = Color TODO
@@ -100,7 +98,6 @@ fun AddNote(
                 imeAction = ImeAction.Next,
                 placeholder = "Title",
                 textStyle = TextStyle(
-                    fontSize = MaterialTheme.typography.subtitle2.fontSize,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -115,7 +112,7 @@ fun AddNote(
                 modifier = Modifier
                     .fillMaxHeight(0.9f),
                 hasTrailingIcon = false,
-                textStyle = TextStyle(fontSize = MaterialTheme.typography.body2.fontSize)
+                textStyle = TextStyle()
             )
         }
     }
@@ -154,7 +151,11 @@ private fun CustomTextField(
                             if (it.length <= maxLength) onNoteTextChange(it)
                         },
                         placeholder = {
-                            Text(placeholder, fontSize = textStyle.fontSize)
+                            Text(
+                                text = placeholder,
+                                fontStyle = textStyle.fontStyle,
+                                fontWeight = textStyle.fontWeight
+                            )
                         },
                         modifier = modifier
                             .fillMaxWidth(),
@@ -178,6 +179,7 @@ private fun CustomTextField(
                             }
                         },
                         shape = RoundedCornerShape(12.dp),
+
                         textStyle = textStyle,
                         keyboardOptions = KeyboardOptions(
                             imeAction = imeAction
@@ -190,22 +192,24 @@ private fun CustomTextField(
                     )
 //                    Spacer(modifier = Modifier.height(5.dp))
                     AnimatedVisibility(noteText.isNotEmpty()){
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 10.dp, end = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            if (noteText.length == maxLength) {
-                                Text("Reached max limit", color = MaterialTheme.colors.error)
-                            } else {
-                                Spacer(modifier = Modifier)
+                        Column{
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 10.dp, end = 10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                if (noteText.length == maxLength) {
+                                    Text("Reached max limit", color = MaterialTheme.colors.error)
+                                } else {
+                                    Spacer(modifier = Modifier)
+                                }
+                                Text(
+                                    "${noteText.length}/$maxLength",
+                                    color = if (noteText.length == maxLength)
+                                        MaterialTheme.colors.error else Color.Unspecified
+                                )
                             }
-                            Text(
-                                "${noteText.length}/$maxLength",
-                                color = if (noteText.length == maxLength)
-                                    MaterialTheme.colors.error else Color.Unspecified
-                            )
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                     }
@@ -228,7 +232,8 @@ private fun TopRow(
 //    color: Color
     onNoteStateChange: () -> Unit,
     onAddNote: (Note) -> Unit,
-    onColorRowStateChange: () -> Unit
+    onColorRowStateChange: () -> Unit,
+    currentID: Int
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -246,6 +251,7 @@ private fun TopRow(
         ButtonsRow(
             noteTitle = noteTitle,
             noteContent = noteContent,
+            currentID = currentID,
             onNoteContentChange = onNoteContentChange,
             onNoteTitleChange = onNoteTitleChange,
 //            color = Color
@@ -260,6 +266,7 @@ private fun TopRow(
 private fun ButtonsRow(
     noteTitle: String,
     noteContent: String,
+    currentID: Int,
     onNoteTitleChange: (String) -> Unit,
     onNoteContentChange: (String) -> Unit,
 //    color:Color
@@ -309,7 +316,7 @@ private fun ButtonsRow(
                         Note(
                             title = noteTitle,
                             text = noteContent,
-                            color = 0,
+                            color = currentID,
                             isTodo = false,
                             id = 0
                         )

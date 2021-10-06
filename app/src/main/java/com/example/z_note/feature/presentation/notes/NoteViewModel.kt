@@ -39,6 +39,12 @@ class NoteViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+    fun deleteNote(note:Note){
+        viewModelScope.launch(Dispatchers.IO){
+            repository.deleteNote(note)
+        }
+    }
+
     var noteBackgroundColor = mutableListOf<androidx.compose.ui.graphics.Color>()
     fun setNoteColors(notes: List<Note>){
         for(item in notes){

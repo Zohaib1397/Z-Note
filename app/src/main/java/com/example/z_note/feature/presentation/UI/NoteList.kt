@@ -42,10 +42,9 @@ fun NoteScreen(
             ) { index, item ->
                 Spacer(modifier = Modifier.height(15.dp))
                 NoteCard(
-                    noteTitle = ListOfNotes[index].title,
-                    noteContent = ListOfNotes[index].text,
-                    noteColor = getColor(ListOfNotes[index].color),
-                    currentNoteIndex = index
+                    note = item,
+                    currentNoteIndex = index,
+                    onDeleteNote = viewModel::deleteNote
                 )
             }
         }

@@ -2,9 +2,7 @@ package com.example.z_note.feature.presentation.UI
 
 import android.content.res.Configuration
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,31 +31,35 @@ fun NoteScreen(
     val ListOfNotes = viewModel.getAllNotes.observeAsState(listOf()).value
     viewModel.setNoteColors(ListOfNotes)
     val searchedNotes = viewModel.searchFromList(ListOfNotes)
-    if(viewModel.currentLayout== LayoutState.Linear_Layout){
-        LazyColumn(
-            contentPadding = PaddingValues(20.dp),
-            state = scrollState
-        ) {
-            item {
-                SearchBar(
-                    searchBarText = viewModel.SearchBarText,
-                    currentLayoutState = viewModel.currentLayout,
-                    onSearchBarTextChange = viewModel::onSearchBarTextChange,
-                    onLayoutChange = viewModel::onLayoutChange
-                )
-            }
-            itemsIndexed(
-                if (viewModel.SearchBarText.isEmpty()) ListOfNotes else searchedNotes
-            ) { index, item ->
-                Spacer(modifier = Modifier.height(15.dp))
-                NoteCard(
-                    note = item,
-                    currentNoteIndex = index,
-                    onDeleteNote = viewModel::deleteNote,
-                    viewModel = viewModel
-                )
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ){
+        if (viewModel.currentLayout == LayoutState.Linear_Layout) {
+            LazyColumn(
+                contentPadding = PaddingValues(20.dp),
+                state = scrollState
+            ) {
+                item {
+                    SearchBar(
+                        searchBarText = viewModel.SearchBarText,
+                        currentLayoutState = viewModel.currentLayout,
+                        onSearchBarTextChange = viewModel::onSearchBarTextChange,
+                        onLayoutChange = viewModel::onLayoutChange
+                    )
+                }
+                itemsIndexed(
+                    if (viewModel.SearchBarText.isEmpty()) ListOfNotes else searchedNotes
+                ) { index, item ->
+                    Spacer(modifier = Modifier.height(15.dp))
+                    NoteCard(
+                        note = item,
+                        currentNoteIndex = index,
+                        onDeleteNote = viewModel::deleteNote,
+                        viewModel = viewModel
+                    )
+                }
             }
         }
+        Spacer(modifier = Modifier.height(30.dp))
     }
-    Spacer(modifier = Modifier.height(30.dp))
 }

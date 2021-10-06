@@ -30,9 +30,8 @@ fun AnimateNewNote(
     callComposable: @Composable () -> Unit
 ) {
     Surface(
-        modifier = Modifier.animateContentSize(
-
-        )
+        shape = CircleShape,
+        modifier = Modifier.animateContentSize()
     ){
         if (noteState == NoteState.Collapsed) {
             callComposable()

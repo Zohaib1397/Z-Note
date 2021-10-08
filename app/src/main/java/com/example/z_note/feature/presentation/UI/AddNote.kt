@@ -54,6 +54,7 @@ fun AddNote(
     onNoteStateChange: () -> Unit,
     onAddNote: (Note) -> Unit
 ) {
+    // this part of code is for color from Entity class companion object
     var currentID by remember{ mutableStateOf(0)}
     var colorRowState by remember { mutableStateOf(ColorRowState.Collapsed) }
 //    var textFieldEnabled by remember{mutableStateOf(false)}
